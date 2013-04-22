@@ -18,6 +18,7 @@ import net.figaro.Whisper;
 
 public class HelloWorld {
 	public static void main(final String[] args) throws Throwable {
+		final GossipMonger gossipMonger = GossipMonger.getInstance();
 		final Talker recv = new AbstractTalker("dummyReceiver") {
 			@Override
 			public void newMessage(final Whisper<?> whisper) {
@@ -25,16 +26,12 @@ public class HelloWorld {
 						+ whisper);
 			}
 		};
-		final Talker send = new AbstractTalker("dummySender") {
-			@Override
-			public void newMessage(final Whisper<?> whisper) {}
-		};
 		//
 		recv.registerListener();
 		//
-		send.sendMessage(new Whisper<String>(recv.getName(), "hello world!"));
+		gossipMonger.send(new Whisper<String>(recv.getName(), "hello world!"));
 		//
-		GossipMonger.getInstance().shutdown();
+		gossipMonger.shutdown();
 	}
 }
 ```
