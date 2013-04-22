@@ -63,4 +63,29 @@ Add the Figaro dependency to your pom.xml:
     </dependency>
 
 ---
+
+## Benchmarks
+
+###### Values are not accurate, but orientative. Higher better. All test Running on Laptop { Windows Vista (32bits), Core 2 Duo 1.4Ghz (U9400), 4GB Ram, Magnetic Disk (WDC-WD5000BEVT-22ZAT0) }.
+
+<table>
+  <tr>
+    <th>TalkerType</th>
+    <th>Req/s</th>
+  </tr>
+  <tr>
+    <th>INPLACE</th>
+    <td>9.3M</td>
+  </tr>
+  <tr>
+    <th>QUEUED_BOUNDED</th>
+    <td>335K</td>
+  </tr>
+  <tr>
+    <th>QUEUED_UNBOUNDED</th>
+    <td>1.1M</td>
+  </tr>
+</table>
+
+---
 Inspired in [Kilim](http://www.malhar.net/sriram/kilim/) and [μJavaActors](https://github.com/ggrandes/j-javaactors-ibm/), this code is Java-minimalistic version.
