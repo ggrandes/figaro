@@ -22,11 +22,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Logger;
+
 /**
  * GossipMonger is the manager of all Whispers and Talkers
  */
 public class GossipMonger {
-	private final static GossipMonger singleton = new GossipMonger();
+	private static final Logger log = Logger.getLogger(GossipMonger.class);
+	private static final GossipMonger singleton = new GossipMonger();
 	private final ExecutorService threadPool = Executors.newCachedThreadPool();
 	private final GossipType types = GossipType.getInstance();
 	private final ConcurrentHashMap<Integer, Set<Talker>> map = new ConcurrentHashMap<Integer, Set<Talker>>();
@@ -71,7 +74,7 @@ public class GossipMonger {
 		final Set<Talker> newSet = new CopyOnWriteArraySet<Talker>();
 		final Set<Talker> set = map.putIfAbsent(id, newSet);
 		((set == null) ? newSet : set).add(talker);
-		System.out.println("Registered type: " + id + " talker: " + talker);
+		log.info("Registered type: " + id + " talker: " + talker);
 	}
 
 	void unregisterListenerTalker(final String type, final Talker talker) {
@@ -82,11 +85,11 @@ public class GossipMonger {
 	void unregisterListenerTalker(final Integer id, final Talker talker) {
 		try {
 			if (map.get(id).remove(talker))
-				System.out.println("Unregistered type: " + id + " talker: "
+				log.info("Unregistered type: " + id + " talker: "
 						+ talker);
 		} catch (Exception e) {
-			System.out.println("Error Unregistered type: " + id + " talker: "
-					+ talker + " exception:" + e.toString());
+			log.error("Error Unregistered type: " + id + " talker: "
+					+ talker + " exception:" + e.toString(), e);
 		}
 	}
 
@@ -122,7 +125,7 @@ public class GossipMonger {
 	 * Shutdown GossipMonger and associated Threads
 	 */
 	public void shutdown() {
-		System.out.println("Shuting down GossipMonger");
+		log.info("Shuting down GossipMonger");
 		isShutdown.set(true);
 		threadPool.shutdown(); // Disable new tasks from being submitted
 		// TODO: Wait for messages to end processing

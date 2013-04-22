@@ -16,10 +16,13 @@ package net.figaro;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Logger;
+
 /**
  * Represents the internal state and logic of a Talker
  */
 class TalkerState implements Runnable {
+	private static final Logger log = Logger.getLogger(TalkerState.class);
 	final AtomicBoolean running = new AtomicBoolean();
 	final String name;
 	final TalkerType type;
@@ -48,13 +51,13 @@ class TalkerState implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("Task begin: " + toString());
+			log.info("Task begin: " + toString());
 			Whisper<?> whisper = null;
 			while ((whisper = chest.poll()) != null) {
 				parent.newMessage(whisper);
 			}
 		} finally {
-			System.out.println("Task end: " + toString());
+			log.info("Task end: " + toString());
 			running.set(false);
 		}
 	}
