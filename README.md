@@ -39,7 +39,7 @@ public class HelloWorld {
 }
 ```
 
-* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/net/figaro/example/)
+* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/main/java/net/figaro/example/)
 
 ---
 
