@@ -57,7 +57,7 @@ public interface Talker {
 	public void newMessage(final Whisper<?> whisper);
 
 	/**
-	 * Send new mesaje from this Talker
+	 * Send new message from this Talker
 	 * 
 	 * @param whisper
 	 */
