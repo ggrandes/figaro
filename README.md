@@ -78,8 +78,8 @@ Add the Figaro dependency to your pom.xml:
     <td>9.3M</td>
   </tr>
   <tr>
-    <th>QUEUED_BOUNDED</th>
-    <td>335K</td>
+    <th>QUEUED_BOUNDED(512)</th>
+    <td>715K</td>
   </tr>
   <tr>
     <th>QUEUED_UNBOUNDED</th>

@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * Memory container for messages (size bounded)
  */
 public class ChestBounded<T extends Whisper<?>> implements Chest<T> {
-	private final ArrayBlockingQueue<T> chest = new ArrayBlockingQueue<T>(128);
+	private final ArrayBlockingQueue<T> chest = new ArrayBlockingQueue<T>(512);
 
 	@Override
 	public boolean isEmpty() {
