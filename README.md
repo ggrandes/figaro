@@ -72,7 +72,7 @@ Add the Figaro dependency to your pom.xml:
   </tr>
   <tr>
     <th>INPLACE</th>
-    <td>7.1M</td>
+    <td>6.3M</td>
   </tr>
   <tr>
     <th>QUEUED_BOUNDED(512)</th>

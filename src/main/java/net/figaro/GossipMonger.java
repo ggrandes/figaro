@@ -14,6 +14,7 @@
  */
 package net.figaro;
 
+import java.util.ArrayDeque;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -33,7 +34,12 @@ public class GossipMonger {
 	private final GossipType types = GossipType.getInstance();
 	private final ConcurrentHashMap<Integer, Set<Talker>> map = new ConcurrentHashMap<Integer, Set<Talker>>();
 	private final AtomicBoolean isShutdown = new AtomicBoolean();
-	private final ThreadLocal<Whisper<?>> ref = new ThreadLocal<Whisper<?>>();
+	private final ThreadLocal<ArrayDeque<Whisper<?>>> ref = new ThreadLocal<ArrayDeque<Whisper<?>>>() {
+		@Override
+		protected ArrayDeque<Whisper<?>> initialValue() {
+			return new ArrayDeque<Whisper<?>>();
+		}
+	};
 
 	private GossipMonger() {
 	}
@@ -101,13 +107,14 @@ public class GossipMonger {
 	public boolean send(Whisper<?> whisper) {
 		if (isShutdown.get())
 			return false;
-		// Internal Queue (Local Thread) for INPLACE loopbacks
-		final Whisper<?> r = ref.get();
-		ref.set(whisper);
-		if (r != null) {
+		// Internal Queue (Local Thread) for INPLACE multiple recursive calls
+		final ArrayDeque<Whisper<?>> localQueue = ref.get();
+		if (!localQueue.isEmpty()) {
+			localQueue.addLast(whisper);
 			return true;
 		}
-		while (whisper != null) {
+		localQueue.addLast(whisper);
+		while ((whisper = localQueue.peekFirst()) != null) {
 			final Integer type = whisper.type;
 			final Set<Talker> set = map.get(type);
 			if (set != null) {
@@ -120,10 +127,7 @@ public class GossipMonger {
 					}
 				}
 			}
-			// Internal Queue (Local Thread) for INPLACE loopbacks
-			whisper = ref.get();
-			if (whisper != null)
-				ref.set(null);
+			localQueue.pollFirst();
 		}
 		return true;
 	}
