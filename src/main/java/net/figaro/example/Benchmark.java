@@ -58,7 +58,7 @@ public class Benchmark {
 		c += talkerRecv1.count();
 		c += talkerRecv2.count();
 		System.out.println("time=" + (end - begin) + " count=" + c + " req/s="
-				+ (c / ((end - begin) / 1000)));
+				+ (c / Math.max(((end - begin) / 1000), 1)));
 		System.out.println("talkerRecv1.count()=" + talkerRecv1.count()
 				+ " talkerRecv1.dump()=" + talkerRecv1.dump());
 		System.out.println("talkerRecv2.count()=" + talkerRecv2.count());
