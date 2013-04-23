@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -34,6 +33,7 @@ public class GossipMonger {
 	private final GossipType types = GossipType.getInstance();
 	private final ConcurrentHashMap<Integer, Set<Talker>> map = new ConcurrentHashMap<Integer, Set<Talker>>();
 	private final AtomicBoolean isShutdown = new AtomicBoolean();
+	private final ThreadLocal<Whisper<?>> ref = new ThreadLocal<Whisper<?>>();
 
 	private GossipMonger() {
 	}
@@ -85,11 +85,10 @@ public class GossipMonger {
 	void unregisterListenerTalker(final Integer id, final Talker talker) {
 		try {
 			if (map.get(id).remove(talker))
-				log.info("Unregistered type: " + id + " talker: "
-						+ talker);
+				log.info("Unregistered type: " + id + " talker: " + talker);
 		} catch (Exception e) {
-			log.error("Error Unregistered type: " + id + " talker: "
-					+ talker + " exception:" + e.toString(), e);
+			log.error("Error Unregistered type: " + id + " talker: " + talker
+					+ " exception:" + e.toString(), e);
 		}
 	}
 
@@ -99,20 +98,32 @@ public class GossipMonger {
 	 * @param whisper
 	 * @return true if message is sended
 	 */
-	public boolean send(final Whisper<?> whisper) {
+	public boolean send(Whisper<?> whisper) {
 		if (isShutdown.get())
 			return false;
-		final Integer type = whisper.type;
-		final Set<Talker> set = map.get(type);
-		if (set != null) {
-			for (final Talker talker : set) {
-				if (talker.getState().chest != null) {
-					while (!talker.getState().queueMessage(whisper))
-						;
-				} else {
-					talker.newMessage(whisper);
+		// Internal Queue (Local Thread) for INPLACE loopbacks
+		final Whisper<?> r = ref.get();
+		ref.set(whisper);
+		if (r != null) {
+			return true;
+		}
+		while (whisper != null) {
+			final Integer type = whisper.type;
+			final Set<Talker> set = map.get(type);
+			if (set != null) {
+				for (final Talker talker : set) {
+					if (talker.getState().chest != null) {
+						while (!talker.getState().queueMessage(whisper))
+							;
+					} else {
+						talker.newMessage(whisper);
+					}
 				}
 			}
+			// Internal Queue (Local Thread) for INPLACE loopbacks
+			whisper = ref.get();
+			if (whisper != null)
+				ref.set(null);
 		}
 		return true;
 	}
