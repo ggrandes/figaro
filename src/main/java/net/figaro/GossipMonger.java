@@ -53,11 +53,11 @@ public class GossipMonger {
 		return singleton;
 	}
 
-	TalkerState initTalker(final String name, final TalkerType type,
+	TalkerContext initTalker(final String name, final TalkerType type,
 			final Talker talker) {
 		final String tname = (name == null ? genRandomName(talker) : name);
 		final Chest<Whisper<?>> chest = createChest(type);
-		return new TalkerState(tname, type, this, chest, talker);
+		return new TalkerContext(tname, type, this, chest, talker);
 	}
 
 	void registerListenerTalker(final Talker talker) {

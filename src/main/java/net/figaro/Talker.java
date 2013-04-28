@@ -30,7 +30,7 @@ public interface Talker {
 	 * 
 	 * @return state
 	 */
-	public TalkerState getState();
+	public TalkerContext getState();
 
 	/**
 	 * Register Talker in GossipMonger for incoming messages

@@ -21,8 +21,8 @@ import org.apache.log4j.Logger;
 /**
  * Represents the internal state and logic of a Talker
  */
-class TalkerState implements Runnable {
-	private static final Logger log = Logger.getLogger(TalkerState.class);
+class TalkerContext implements Runnable {
+	private static final Logger log = Logger.getLogger(TalkerContext.class);
 	final AtomicBoolean running = new AtomicBoolean();
 	final String name;
 	final TalkerType type;
@@ -30,7 +30,7 @@ class TalkerState implements Runnable {
 	final Chest<Whisper<?>> chest;
 	final Talker parent;
 
-	TalkerState(final String name, final TalkerType type,
+	TalkerContext(final String name, final TalkerType type,
 			final GossipMonger gossipMonger, final Chest<Whisper<?>> chest,
 			final Talker parent) {
 		this.name = name;

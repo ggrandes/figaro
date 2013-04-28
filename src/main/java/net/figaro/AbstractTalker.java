@@ -18,7 +18,7 @@ package net.figaro;
  * Unit of processing (abstract implementation)
  */
 public abstract class AbstractTalker implements Talker {
-	final TalkerState state;
+	final TalkerContext state;
 	final GossipMonger gossipMonger;
 
 	/**
@@ -62,7 +62,7 @@ public abstract class AbstractTalker implements Talker {
 	}
 
 	@Override
-	public TalkerState getState() {
+	public TalkerContext getState() {
 		return state;
 	}
 
