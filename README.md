@@ -2,7 +2,7 @@
 
 In-process Message System for Actor Model in Java (like Kilim, μJavaActors, Akka,... but very simplified). Open Source Java project under Apache License v2.0
 
-### Current Development Version is [0.0.3](https://maven-release.s3.amazonaws.com/release/net/figaro/figaro/0.0.3/figaro-0.0.3.jar)
+### Current Development Version is [0.0.4](https://maven-release.s3.amazonaws.com/release/net/figaro/figaro/0.0.4/figaro-0.0.4.jar)
 
 ---
 
@@ -56,7 +56,7 @@ Add the Figaro dependency to your pom.xml:
     <dependency>
         <groupId>net.figaro</groupId>
         <artifactId>figaro</artifactId>
-        <version>0.0.3</version>
+        <version>0.0.4</version>
     </dependency>
 
 ---
