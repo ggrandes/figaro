@@ -84,5 +84,7 @@ Add the Figaro dependency to your pom.xml:
   </tr>
 </table>
 
+###### Reference value (Akka 2.2.0): 702K (unbounded mailbox)
+
 ---
 Inspired in [Kilim](http://www.malhar.net/sriram/kilim/) and [μJavaActors](https://github.com/ggrandes/j-javaactors-ibm/), this code is Java-minimalistic version.
