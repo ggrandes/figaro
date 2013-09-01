@@ -65,26 +65,21 @@ Add the Figaro dependency to your pom.xml:
 
 ###### Values are not accurate, but orientative. Higher better. All test Running on Laptop { Windows Vista (32bits), Core 2 Duo 1.4Ghz (U9400), 4GB Ram, Magnetic Disk (WDC-WD5000BEVT-22ZAT0) }.
 
-<table>
-  <tr>
-    <th>TalkerType</th>
-    <th>Req/s</th>
-  </tr>
-  <tr>
-    <th>INPLACE</th>
-    <td>6.3M</td>
-  </tr>
-  <tr>
-    <th>QUEUED_BOUNDED(512)</th>
-    <td>736K</td>
-  </tr>
-  <tr>
-    <th>QUEUED_UNBOUNDED</th>
-    <td>1.6M</td>
-  </tr>
-</table>
+TalkerType | Msg/s
+:--- | ---:
+INPLACE | 6.3M
+QUEUED_BOUNDED(512) | 736K
+QUEUED_UNBOUNDED | 1.6M
+Akka_Unbounded | 702K
 
-###### Reference value (Akka 2.2.0): 702K (unbounded mailbox)
+
+###### Comparative of Figaro (queued_unbounded) vs Akka 2.2.0 (unbounded mailbox). Higher better. All test Running on Amazon EC2 { Ubuntu 12.04 LTS (64bits), [CC2.8XLARGE](http://aws.amazon.com/en/ec2/instance-types/#instance-details) (Dual Intel Xeon E5-2670, 8-cores hyperthreading) }.
+
+Threads | 32 | 16 | 8 | 4
+:--- | ---: | ---: | ---: | ---:
+Akka | 7.6M | 6.6M | 4.1M | 2.6M
+Figaro | 12.4M | 14.6M | 5.6M | 3.6M
+
 
 ---
 Inspired in [Kilim](http://www.malhar.net/sriram/kilim/) and [μJavaActors](https://github.com/ggrandes/j-javaactors-ibm/), this code is Java-minimalistic version.
