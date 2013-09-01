@@ -80,7 +80,8 @@ public class GossipMonger {
 		final Set<Talker> newSet = new CopyOnWriteArraySet<Talker>();
 		final Set<Talker> set = map.putIfAbsent(id, newSet);
 		((set == null) ? newSet : set).add(talker);
-		log.info("Registered type: " + id + " talker: " + talker);
+		if (log.isDebugEnabled())
+			log.debug("Registered type: " + id + " talker: " + talker);
 	}
 
 	void unregisterListenerTalker(final String type, final Talker talker) {
@@ -90,8 +91,10 @@ public class GossipMonger {
 
 	void unregisterListenerTalker(final Integer id, final Talker talker) {
 		try {
-			if (map.get(id).remove(talker))
-				log.info("Unregistered type: " + id + " talker: " + talker);
+			if (map.get(id).remove(talker)) {
+				if (log.isDebugEnabled())
+					log.debug("Unregistered type: " + id + " talker: " + talker);
+			}
 		} catch (Exception e) {
 			log.error("Error Unregistered type: " + id + " talker: " + talker
 					+ " exception:" + e.toString(), e);

@@ -51,13 +51,15 @@ class TalkerContext implements Runnable {
 	@Override
 	public void run() {
 		try {
-			log.info("Task begin: " + toString());
+			if (log.isDebugEnabled())
+				log.debug("Task begin: " + toString());
 			Whisper<?> whisper = null;
 			while ((whisper = chest.poll()) != null) {
 				parent.newMessage(whisper);
 			}
 		} finally {
-			log.info("Task end: " + toString());
+			if (log.isDebugEnabled())
+				log.debug("Task end: " + toString());
 			running.set(false);
 		}
 	}
