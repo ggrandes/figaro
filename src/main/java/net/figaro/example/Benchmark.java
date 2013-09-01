@@ -1,6 +1,6 @@
 package net.figaro.example;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.figaro.AbstractTalker;
@@ -10,21 +10,34 @@ import net.figaro.TalkerType;
 import net.figaro.Whisper;
 
 public class Benchmark {
+	protected static final long TIME_TEST = 5000;
+
 	public static void main(final String[] args) throws Throwable {
+		int processors = Runtime.getRuntime().availableProcessors();
+		System.out.println("availableProcessors: " + processors);
+		//
+		while (processors > 0) {
+			doTest(TalkerType.QUEUED_BOUNDED, processors);
+			doTest(TalkerType.QUEUED_UNBOUNDED, processors);
+			doTest(TalkerType.INPLACE, processors);
+			processors >>= 1;
+		}
+		GossipMonger.getInstance().shutdown();
+	}
+
+	public static void doTest(final TalkerType type, final int threadCount) throws Throwable {
 		//
 		// Create Talkers
-		final TestTalker talkerRecv1 = new TestTalker("Simon",
-				TalkerType.INPLACE);
-		final TestTalker talkerRecv2 = new TestTalker("Mateo",
-				TalkerType.INPLACE);
-		//
-		// Register for listening
-		talkerRecv1.registerListener();
-		talkerRecv2.registerListener();
+		final TestTalker[] talkerRecv = new TestTalker[threadCount];
+		for (int i = 0; i < talkerRecv.length; i++) {
+			talkerRecv[i] = new TestTalker("recv" + i, type);
+			// Register for listening
+			talkerRecv[i].registerListener();
+		}
 		//
 		// Create Senders
-		long begin = System.currentTimeMillis();
-		Thread[] threads = new Thread[2];
+		final long begin = System.currentTimeMillis();
+		final Thread[] threads = new Thread[threadCount];
 		for (int i = 0; i < threads.length; i++) {
 			threads[i] = new Thread(new Runnable() {
 				@Override
@@ -34,10 +47,9 @@ public class Benchmark {
 					while (true) {
 						final long now = System.currentTimeMillis();
 						final Integer ts = Integer.valueOf((int) (now / 1000));
-						final Whisper<?> whisper = new Whisper<Integer>(null,
-								GossipType.BROADCAST, ts);
+						final Whisper<?> whisper = new Whisper<Integer>(null, GossipType.BROADCAST, ts);
 						t.sendMessage(whisper);
-						if ((begin + 5000) < now)
+						if ((begin + TIME_TEST) < now)
 							break;
 					}
 				}
@@ -55,19 +67,19 @@ public class Benchmark {
 		}
 		long end = System.currentTimeMillis();
 		int c = 0;
-		c += talkerRecv1.count();
-		c += talkerRecv2.count();
-		System.out.println("time=" + (end - begin) + " count=" + c + " req/s="
-				+ (c / Math.max(((end - begin) / 1000), 1)));
-		System.out.println("talkerRecv1.count()=" + talkerRecv1.count()
-				+ " talkerRecv1.dump()=" + talkerRecv1.dump());
-		System.out.println("talkerRecv2.count()=" + talkerRecv2.count());
-		//
-		GossipMonger.getInstance().shutdown();
+		for (TestTalker t : talkerRecv) {
+			System.out.println(type + " name=" + t.getName() + " count()=" + t.count() + " dump()="
+					+ t.dump());
+			c += t.count();
+			// Unregister
+			t.unregisterListener();
+		}
+		System.out.println(type + " threads=" + threadCount + " time=" + (end - begin) + " count=" + c
+				+ " req/s=" + (c / Math.max(((end - begin) / 1000), 1)));
 	}
 
 	public static class TestTalker extends AbstractTalker {
-		private HashMap<Integer, AtomicInteger> h = new HashMap<Integer, AtomicInteger>();
+		private ConcurrentHashMap<Integer, AtomicInteger> h = new ConcurrentHashMap<Integer, AtomicInteger>();
 
 		public TestTalker(final String name) {
 			super(name);
@@ -87,8 +99,7 @@ public class Benchmark {
 				}
 				i.incrementAndGet();
 			} else {
-				System.out.println(getName() + " Receive new whisper: "
-						+ whisper);
+				System.out.println(getName() + " Receive new whisper: " + whisper);
 			}
 		}
 
