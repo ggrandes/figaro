@@ -14,19 +14,22 @@ import net.figaro.Whisper;
 
 public class Benchmark {
 	protected static final long TIME_TEST = 5000;
+	protected static final int LOOPS = 3;
 
 	public static void main(final String[] args) throws Throwable {
-		int processors = Runtime.getRuntime().availableProcessors();
-		System.out.println("availableProcessors: " + processors);
-		//
-		while (processors > 0) {
-			doTest(TalkerType.INPLACE_UNSYNC, processors);
-			doTest(TalkerType.INPLACE_SYNC, processors);
-			doTest(TalkerType.QUEUED_UNBOUNDED, processors);
-			doTest(TalkerType.QUEUED_BOUNDED, processors);
-			processors >>= 1;
-			System.out.println();
-			break;
+		for (int i = 0; i < LOOPS; i++) {
+			int processors = Runtime.getRuntime().availableProcessors();
+			System.out.println("availableProcessors: " + processors);
+			//
+			while (processors > 0) {
+				doTest(TalkerType.INPLACE_UNSYNC, processors);
+				doTest(TalkerType.INPLACE_SYNC, processors);
+				doTest(TalkerType.QUEUED_UNBOUNDED, processors);
+				doTest(TalkerType.QUEUED_BOUNDED, processors);
+				processors >>= 1;
+				System.out.println();
+				break;
+			}
 		}
 		System.out.println("--- Waiting ---");
 		Thread.sleep(5000);
