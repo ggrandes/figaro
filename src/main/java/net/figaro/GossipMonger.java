@@ -31,7 +31,7 @@ public class GossipMonger implements Runnable {
 	private static final Logger log = Logger.getLogger(GossipMonger.class);
 	private static GossipMonger singleton = null;
 	private final ExecutorService threadPool = Executors.newCachedThreadPool();
-	private final GossipType types = GossipType.getDefaultInstance();
+	private final GossipType types = new GossipType();
 	private final ConcurrentHashMap<Integer, Set<Talker>> map = new ConcurrentHashMap<Integer, Set<Talker>>();
 	private final Set<Talker> listenerQueuedTalkers = new CopyOnWriteArraySet<Talker>();
 	private final AtomicBoolean isShutdown = new AtomicBoolean();
@@ -66,6 +66,10 @@ public class GossipMonger implements Runnable {
 		final String tname = (name == null ? genRandomName(talker) : name);
 		final Chest<Whisper<?>> chest = createChest(type);
 		return new TalkerContext(tname, type, this, chest, talker);
+	}
+
+	Integer getTypeIdByName(final String type) {
+		return types.getIdByName(type);
 	}
 
 	void registerListenerTalker(final Talker talker) {

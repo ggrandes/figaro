@@ -30,22 +30,12 @@ public class GossipType {
 	 */
 	public static final Integer BROADCAST = Integer.valueOf(Integer.MAX_VALUE); // BROADCAST
 	//
-	private final static GossipType singleton = new GossipType();
 	private final ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<String, Integer>();
 	private final AtomicInteger counter = new AtomicInteger();
 
-	private GossipType() {
+	GossipType() {
 		map.putIfAbsent("NULL", BROADCAST);
 		map.putIfAbsent("BROADCAST", BROADCAST);
-	}
-
-	/**
-	 * Return default instance
-	 * 
-	 * @return default instance
-	 */
-	public static GossipType getDefaultInstance() {
-		return singleton;
 	}
 
 	/**
