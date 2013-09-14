@@ -18,7 +18,7 @@ import net.figaro.Whisper;
 
 public class HelloWorld {
 	public static void main(final String[] args) throws Throwable {
-		final GossipMonger gossipMonger = GossipMonger.getInstance();
+		final GossipMonger gossipMonger = GossipMonger.getDefaultInstance();
 		final Talker recv = new AbstractTalker("dummyReceiver") {
 			@Override
 			public void newMessage(final Whisper<?> whisper) {
@@ -67,13 +67,13 @@ Add the Figaro dependency to your pom.xml:
 
 TalkerType | Msg/s
 :--- | ---:
-INPLACE | 6.3M
-QUEUED_BOUNDED(512) | 736K
-QUEUED_UNBOUNDED | 1.6M
-Akka_Unbounded | 702K
+INPLACE UNSYNC | 5.6M
+INPLACE SYNC | 2.6M
+QUEUED UNBOUNDED | 1.6M
+QUEUED BOUNDED(512) | 688K
 
 
-###### Comparative of Figaro (queued_unbounded) vs Akka 2.2.0 (unbounded mailbox). Higher better. All test Running on Amazon EC2 { Ubuntu 12.04 LTS (64bits), [CC2.8XLARGE](http://aws.amazon.com/en/ec2/instance-types/#instance-details) (Dual Intel Xeon E5-2670, 8-cores hyperthreading) }.
+###### Comparative of Figaro 0.0.4 (queued_unbounded) vs Akka 2.2.0 (unbounded mailbox). Higher better. All test Running on Amazon EC2 { Ubuntu 12.04 LTS (64bits), [CC2.8XLARGE](http://aws.amazon.com/en/ec2/instance-types/#instance-details) (Dual Intel Xeon E5-2670, 8-cores hyperthreading) }.
 
 Threads | 32 | 16 | 8 | 4
 :--- | ---: | ---: | ---: | ---:

@@ -82,7 +82,7 @@ public class Whisper<T> {
 	 * @param msg
 	 */
 	public Whisper(final Talker from, final String type, final T msg) {
-		this(from, GossipType.getInstance().getIdByName(type), msg);
+		this(from, GossipType.getDefaultInstance().getIdByName(type), msg);
 	}
 
 	public String toString() {

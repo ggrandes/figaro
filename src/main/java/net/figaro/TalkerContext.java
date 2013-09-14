@@ -14,8 +14,6 @@
  */
 package net.figaro;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -23,16 +21,15 @@ import org.apache.log4j.Logger;
  */
 class TalkerContext implements Runnable {
 	private static final Logger log = Logger.getLogger(TalkerContext.class);
-	final AtomicBoolean running = new AtomicBoolean();
+	private volatile boolean running = false;
 	final String name;
 	final TalkerType type;
 	final GossipMonger gossipMonger;
 	final Chest<Whisper<?>> chest;
 	final Talker parent;
 
-	TalkerContext(final String name, final TalkerType type,
-			final GossipMonger gossipMonger, final Chest<Whisper<?>> chest,
-			final Talker parent) {
+	TalkerContext(final String name, final TalkerType type, final GossipMonger gossipMonger,
+			final Chest<Whisper<?>> chest, final Talker parent) {
 		this.name = name;
 		this.type = type;
 		this.gossipMonger = gossipMonger;
@@ -41,26 +38,53 @@ class TalkerContext implements Runnable {
 	}
 
 	final boolean queueMessage(final Whisper<?> whisper) {
-		final boolean ret = chest.offer(whisper);
-		if (ret && !running.getAndSet(true)) {
-			gossipMonger.submitWork(this);
-		}
-		return ret;
+		return chest.offer(whisper);
+	}
+
+	public boolean needScheduling() {
+		return !(running || chest.isEmpty());
 	}
 
 	@Override
 	public void run() {
+		if (running)
+			return;
 		try {
+			running = true;
 			if (log.isDebugEnabled())
 				log.debug("Task begin: " + toString());
+			if (chest.isEmpty())
+				return;
+			long idleBegin = System.currentTimeMillis();
 			Whisper<?> whisper = null;
-			while ((whisper = chest.poll()) != null) {
-				parent.newMessage(whisper);
+			while (!gossipMonger.isShutdown()) {
+				long now = System.currentTimeMillis();
+				while ((whisper = chest.poll()) != null) {
+					parent.newMessage(whisper);
+					now = System.currentTimeMillis();
+					idleBegin = now;
+				}
+//				Thread.yield();
+				final long idle = (now - idleBegin);
+				if (idle > 1000)
+					break;
+				if (idle > 100) {
+					try {
+						System.out.println(getName() + " TalkerContext sleep()" );
+						Thread.sleep(100);
+						now = System.currentTimeMillis();
+						idleBegin = now;
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						e.printStackTrace(System.out);
+						break;
+					}
+				}
 			}
 		} finally {
+			running = false;
 			if (log.isDebugEnabled())
 				log.debug("Task end: " + toString());
-			running.set(false);
 		}
 	}
 

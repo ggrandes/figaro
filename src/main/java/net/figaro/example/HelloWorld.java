@@ -30,6 +30,6 @@ public class HelloWorld {
 		//
 		send.sendMessage(new Whisper<String>(recv.getName(), "destroy world!"));
 		//
-		GossipMonger.getInstance().shutdown();
+		GossipMonger.getDefaultInstance().shutdown();
 	}
 }

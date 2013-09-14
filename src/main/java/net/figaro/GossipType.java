@@ -44,7 +44,7 @@ public class GossipType {
 	 * 
 	 * @return default instance
 	 */
-	public static GossipType getInstance() {
+	public static GossipType getDefaultInstance() {
 		return singleton;
 	}
 

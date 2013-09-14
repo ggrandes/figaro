@@ -1,9 +1,12 @@
 package net.figaro.example;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.figaro.AbstractTalker;
+import net.figaro.ChestBounded;
+import net.figaro.ChestUnbounded;
 import net.figaro.GossipMonger;
 import net.figaro.GossipType;
 import net.figaro.TalkerType;
@@ -17,15 +20,20 @@ public class Benchmark {
 		System.out.println("availableProcessors: " + processors);
 		//
 		while (processors > 0) {
-			doTest(TalkerType.QUEUED_BOUNDED, processors);
+			doTest(TalkerType.INPLACE_UNSYNC, processors);
+			doTest(TalkerType.INPLACE_SYNC, processors);
 			doTest(TalkerType.QUEUED_UNBOUNDED, processors);
-			doTest(TalkerType.INPLACE, processors);
+			doTest(TalkerType.QUEUED_BOUNDED, processors);
 			processors >>= 1;
+			System.out.println();
+			break;
 		}
-		GossipMonger.getInstance().shutdown();
+		System.out.println("--- Waiting ---");
+		Thread.sleep(5000);
 	}
 
 	public static void doTest(final TalkerType type, final int threadCount) throws Throwable {
+		System.out.println("--- Testing type=" + type + " threads=" + threadCount);
 		//
 		// Create Talkers
 		final TestTalker[] talkerRecv = new TestTalker[threadCount];
@@ -76,10 +84,11 @@ public class Benchmark {
 		}
 		System.out.println(type + " threads=" + threadCount + " time=" + (end - begin) + " count=" + c
 				+ " req/s=" + (c / Math.max(((end - begin) / 1000), 1)));
+		GossipMonger.getDefaultInstance().shutdown();
 	}
 
 	public static class TestTalker extends AbstractTalker {
-		private ConcurrentHashMap<Integer, AtomicInteger> h = new ConcurrentHashMap<Integer, AtomicInteger>();
+		private Map<Integer, AtomicInteger> h = new ConcurrentHashMap<Integer, AtomicInteger>();
 
 		public TestTalker(final String name) {
 			super(name);

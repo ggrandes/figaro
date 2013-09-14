@@ -19,17 +19,21 @@ package net.figaro;
  */
 public enum TalkerType {
 	/**
-	 * Messages are send/received in current Thread (in-place)
+	 * Messages are send/received in current Thread (in-place) without synchronized block
 	 */
-	INPLACE,
+	INPLACE_UNSYNC,
 	/**
-	 * Messages are queued (queue is depth limited) for processes in a worker
-	 * Thread
+	 * Messages are send/received in current Thread (in-place) inside synchronized block
 	 */
-	QUEUED_BOUNDED,
+	INPLACE_SYNC,
 	/**
 	 * Messages are queued (queue is depth unlimited) for processes in a worker
 	 * Thread
 	 */
-	QUEUED_UNBOUNDED
+	QUEUED_UNBOUNDED,
+	/**
+	 * Messages are queued (queue is depth limited) for processes in a worker
+	 * Thread
+	 */
+	QUEUED_BOUNDED
 }

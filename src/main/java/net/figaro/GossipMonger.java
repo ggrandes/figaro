@@ -27,12 +27,13 @@ import org.apache.log4j.Logger;
 /**
  * GossipMonger is the manager of all Whispers and Talkers
  */
-public class GossipMonger {
+public class GossipMonger implements Runnable {
 	private static final Logger log = Logger.getLogger(GossipMonger.class);
-	private static final GossipMonger singleton = new GossipMonger();
+	private static GossipMonger singleton = null;
 	private final ExecutorService threadPool = Executors.newCachedThreadPool();
-	private final GossipType types = GossipType.getInstance();
+	private final GossipType types = GossipType.getDefaultInstance();
 	private final ConcurrentHashMap<Integer, Set<Talker>> map = new ConcurrentHashMap<Integer, Set<Talker>>();
+	private final Set<Talker> listenerQueuedTalkers = new CopyOnWriteArraySet<Talker>();
 	private final AtomicBoolean isShutdown = new AtomicBoolean();
 	private final ThreadLocal<ArrayDeque<Whisper<?>>> ref = new ThreadLocal<ArrayDeque<Whisper<?>>>() {
 		@Override
@@ -42,6 +43,7 @@ public class GossipMonger {
 	};
 
 	private GossipMonger() {
+		threadPool.submit(this);
 	}
 
 	/**
@@ -49,12 +51,18 @@ public class GossipMonger {
 	 * 
 	 * @return instance
 	 */
-	public static GossipMonger getInstance() {
+	public static GossipMonger getDefaultInstance() {
+		createInstance();
 		return singleton;
 	}
 
-	TalkerContext initTalker(final String name, final TalkerType type,
-			final Talker talker) {
+	private static synchronized void createInstance() {
+		if (singleton == null) {
+			singleton = new GossipMonger();
+		}
+	}
+
+	TalkerContext initTalker(final String name, final TalkerType type, final Talker talker) {
 		final String tname = (name == null ? genRandomName(talker) : name);
 		final Chest<Whisper<?>> chest = createChest(type);
 		return new TalkerContext(tname, type, this, chest, talker);
@@ -80,6 +88,12 @@ public class GossipMonger {
 		final Set<Talker> newSet = new CopyOnWriteArraySet<Talker>();
 		final Set<Talker> set = map.putIfAbsent(id, newSet);
 		((set == null) ? newSet : set).add(talker);
+		switch (talker.getState().type) {
+		case QUEUED_UNBOUNDED:
+		case QUEUED_BOUNDED:
+			listenerQueuedTalkers.add(talker);
+			break;
+		}
 		if (log.isDebugEnabled())
 			log.debug("Registered type: " + id + " talker: " + talker);
 	}
@@ -91,18 +105,19 @@ public class GossipMonger {
 
 	void unregisterListenerTalker(final Integer id, final Talker talker) {
 		try {
+			// TODO: Unregister from listenerQueuedTalkers
 			if (map.get(id).remove(talker)) {
 				if (log.isDebugEnabled())
 					log.debug("Unregistered type: " + id + " talker: " + talker);
 			}
 		} catch (Exception e) {
-			log.error("Error Unregistered type: " + id + " talker: " + talker
-					+ " exception:" + e.toString(), e);
+			log.error("Error Unregistered type: " + id + " talker: " + talker + " exception:" + e.toString(),
+					e);
 		}
 	}
 
 	/**
-	 * Send message
+	 * Send message and optionally wait response
 	 * 
 	 * @param whisper
 	 * @return true if message is sended
@@ -122,11 +137,21 @@ public class GossipMonger {
 			final Set<Talker> set = map.get(type);
 			if (set != null) {
 				for (final Talker talker : set) {
-					if (talker.getState().chest != null) {
-						while (!talker.getState().queueMessage(whisper))
-							;
-					} else {
+					final TalkerContext ctx = talker.getState();
+					switch (ctx.type) {
+					case INPLACE_UNSYNC:
 						talker.newMessage(whisper);
+						break;
+					case INPLACE_SYNC:
+						synchronized (talker) {
+							talker.newMessage(whisper);
+						}
+						break;
+					case QUEUED_UNBOUNDED:
+					case QUEUED_BOUNDED:
+						while (!ctx.queueMessage(whisper))
+							;
+						break;
 					}
 				}
 			}
@@ -135,19 +160,60 @@ public class GossipMonger {
 		return true;
 	}
 
-	final void submitWork(final Runnable talker) {
-		threadPool.submit(talker);
+	final void scheduleTalkerContext(final TalkerContext ctx) {
+		threadPool.submit(ctx);
+	}
+
+	@Override
+	public void run() {
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Task begin: " + toString());
+			while (!isShutdown()) {
+				boolean scheduled = false;
+				for (final Talker talker : listenerQueuedTalkers) {
+					final TalkerContext ctx = talker.getState();
+					if (ctx.needScheduling()) {
+						scheduled = true;
+						scheduleTalkerContext(ctx);
+					}
+				}
+				if (scheduled) {
+					Thread.yield();
+				} else {
+					try {
+						// System.out.println("GossipMonger sleep()");
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						e.printStackTrace(System.out);
+						break;
+					}
+				}
+			}
+		} finally {
+			if (log.isDebugEnabled())
+				log.debug("Task end: " + toString());
+		}
 	}
 
 	/**
 	 * Shutdown GossipMonger and associated Threads
 	 */
 	public void shutdown() {
+		singleton = null;
 		log.info("Shuting down GossipMonger");
 		isShutdown.set(true);
 		threadPool.shutdown(); // Disable new tasks from being submitted
 		// TODO: Wait for messages to end processing
 		shutdownAndAwaitTermination(threadPool);
+	}
+
+	/**
+	 * Check if Shutdown is set
+	 */
+	public boolean isShutdown() {
+		return isShutdown.get();
 	}
 
 	private void shutdownAndAwaitTermination(final ExecutorService pool) {
@@ -173,12 +239,16 @@ public class GossipMonger {
 	}
 
 	private Chest<Whisper<?>> createChest(final TalkerType type) {
-		if (type == TalkerType.INPLACE)
+		switch (type) {
+		case INPLACE_UNSYNC:
 			return null;
-		if (type == TalkerType.QUEUED_BOUNDED)
-			return new ChestBounded<Whisper<?>>();
-		if (type == TalkerType.QUEUED_UNBOUNDED)
+		case INPLACE_SYNC:
+			return null;
+		case QUEUED_UNBOUNDED:
 			return new ChestUnbounded<Whisper<?>>();
-		return null;
+		case QUEUED_BOUNDED:
+			return new ChestBounded<Whisper<?>>();
+		}
+		throw new IllegalArgumentException("Invalid TalkerType");
 	}
 }

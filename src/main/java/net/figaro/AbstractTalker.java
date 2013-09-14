@@ -22,12 +22,12 @@ public abstract class AbstractTalker implements Talker {
 	final GossipMonger gossipMonger;
 
 	/**
-	 * Create Talker of type INPLACE
+	 * Create Talker of type QUEUED_UNBOUNDED
 	 * 
 	 * @param name
 	 */
 	public AbstractTalker(final String name) {
-		this(name, TalkerType.INPLACE);
+		this(name, TalkerType.QUEUED_UNBOUNDED);
 	}
 
 	/**
@@ -37,7 +37,7 @@ public abstract class AbstractTalker implements Talker {
 	 * @param type
 	 */
 	public AbstractTalker(final String name, final TalkerType type) {
-		this.gossipMonger = GossipMonger.getInstance();
+		this.gossipMonger = GossipMonger.getDefaultInstance();
 		this.state = gossipMonger.initTalker(name, type, this);
 	}
 
