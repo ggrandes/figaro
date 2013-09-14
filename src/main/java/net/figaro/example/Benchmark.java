@@ -5,8 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.figaro.AbstractTalker;
-import net.figaro.ChestBounded;
-import net.figaro.ChestUnbounded;
 import net.figaro.GossipMonger;
 import net.figaro.GossipType;
 import net.figaro.TalkerType;
