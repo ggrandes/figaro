@@ -19,58 +19,39 @@ package net.figaro;
  */
 public class Whisper<T> {
 	public final Talker from;
-	public final Integer type;
+	public final Integer dest;
 	public final T msg;
 
 	/**
-	 * Create new message (destination drop)
+	 * Create new message (from=null)
 	 * 
+	 * @param dest
 	 * @param msg
 	 */
-	public Whisper(final T msg) {
-		this(null, GossipType.NULL, msg);
-	}
-
-	/**
-	 * Create new message (destination drop)
-	 * 
-	 * @param from
-	 * @param msg
-	 */
-	public Whisper(final Talker from, final T msg) {
-		this(from, GossipType.NULL, msg);
+	public Whisper(final Integer dest, final T msg) {
+		this(null, dest, msg);
 	}
 
 	/**
 	 * Create new message (from=null)
 	 * 
-	 * @param type
+	 * @param dest
 	 * @param msg
 	 */
-	public Whisper(final Integer type, final T msg) {
-		this(null, type, msg);
-	}
-
-	/**
-	 * Create new message (from=null)
-	 * 
-	 * @param type
-	 * @param msg
-	 */
-	public Whisper(final String type, final T msg) {
-		this(null, type, msg);
+	public Whisper(final String dest, final T msg) {
+		this(null, dest, msg);
 	}
 
 	/**
 	 * Create new message
 	 * 
 	 * @param from
-	 * @param type
+	 * @param dest
 	 * @param msg
 	 */
-	public Whisper(final Talker from, final Integer type, final T msg) {
+	public Whisper(final Talker from, final Integer dest, final T msg) {
 		this.from = from;
-		this.type = (type == null ? GossipType.NULL : type);
+		this.dest = (dest == null ? GossipType.NULL : dest);
 		this.msg = msg;
 	}
 
@@ -78,20 +59,21 @@ public class Whisper<T> {
 	 * Create new message
 	 * 
 	 * @param from
-	 * @param type
+	 * @param dest
 	 * @param msg
 	 */
-	public Whisper(final Talker from, final String type, final T msg) {
-		this(from, GossipMonger.getDefaultInstance().getTypeIdByName(type), msg);
+	public Whisper(final Talker from, final String dest, final T msg) {
+		this(from, GossipMonger.getDefaultInstance().getTypeIdByName(dest), msg);
 	}
 
+	@Override
 	public String toString() {
 		return "Whisper from: <" + (from == null ? null : from.getName())
-				+ "> type: <" + type + "> msg: <" + msg + ">";
+				+ "> dest: <" + dest + "> msg: <" + msg + ">";
 	}
 
 	public static void main(final String[] args) {
-		final Whisper<String> w = new Whisper<String>("hello world!");
+		final Whisper<String> w = new Whisper<String>(GossipType.BROADCAST, "hello world!");
 		System.out.println(w);
 	}
 

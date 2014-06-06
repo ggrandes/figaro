@@ -137,7 +137,7 @@ public class GossipMonger implements Runnable {
 		}
 		localQueue.addLast(whisper);
 		while ((whisper = localQueue.peekFirst()) != null) {
-			final Integer type = whisper.type;
+			final Integer type = whisper.dest;
 			final Set<Talker> set = map.get(type);
 			if (set != null) {
 				for (final Talker talker : set) {

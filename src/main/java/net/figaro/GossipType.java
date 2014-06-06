@@ -39,10 +39,10 @@ public class GossipType {
 	}
 
 	/**
-	 * Register new type
+	 * Register new type/destination
 	 * 
 	 * @param name
-	 * @return id of new type
+	 * @return id of new type/destination
 	 */
 	public Integer registerName(final String name) {
 		final Integer newid = Integer.valueOf(counter.incrementAndGet());
@@ -51,10 +51,10 @@ public class GossipType {
 	}
 
 	/**
-	 * Query for a registered type
+	 * Query for a registered type/destination
 	 * 
 	 * @param name
-	 * @return id of registered type
+	 * @return id of registered type/destination
 	 */
 	public Integer getIdByName(final String name) {
 		return map.get(name);
