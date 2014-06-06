@@ -211,6 +211,8 @@ public class GossipMonger implements Runnable {
 		threadPool.shutdown(); // Disable new tasks from being submitted
 		// TODO: Wait for messages to end processing
 		shutdownAndAwaitTermination(threadPool);
+		// Clean ThreadLocal
+		ref.remove();
 	}
 
 	/**
