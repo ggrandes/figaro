@@ -11,10 +11,10 @@ In-process Asynchronous Message System in Java for Event Bus/Actor Model (like K
 #### Usage Example
 
 ```java
-import org.javastack.AbstractTalker;
-import org.javastack.GossipMonger;
-import org.javastack.Talker;
-import org.javastack.Whisper;
+import org.javastack.figaro.AbstractTalker;
+import org.javastack.figaro.GossipMonger;
+import org.javastack.figaro.Talker;
+import org.javastack.figaro.Whisper;
 
 public class HelloWorld {
 	public static void main(final String[] args) throws Throwable {

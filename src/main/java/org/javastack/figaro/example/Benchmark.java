@@ -1,14 +1,14 @@
-package org.javastack.example;
+package org.javastack.figaro.example;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.javastack.AbstractTalker;
-import org.javastack.GossipMonger;
-import org.javastack.GossipType;
-import org.javastack.TalkerType;
-import org.javastack.Whisper;
+import org.javastack.figaro.AbstractTalker;
+import org.javastack.figaro.GossipMonger;
+import org.javastack.figaro.GossipType;
+import org.javastack.figaro.TalkerType;
+import org.javastack.figaro.Whisper;
 
 
 public class Benchmark {

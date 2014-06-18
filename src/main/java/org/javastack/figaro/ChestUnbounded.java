@@ -12,24 +12,15 @@
  * limitations under the License.
  *
  */
-package org.javastack;
+package org.javastack.figaro;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Memory container for messages (size bounded)
+ * Memory container for messages (size unbounded)
  */
-public class ChestBounded<T extends Whisper<?>> implements Chest<T> {
-	private final ArrayBlockingQueue<T> chest;
-
-	public ChestBounded(final int size) {
-		chest = new ArrayBlockingQueue<T>(size);
-	}
-
-	public ChestBounded() {
-		this(512);
-	}
+public class ChestUnbounded<T extends Whisper<?>> implements Chest<T> {
+	private final ConcurrentLinkedQueue<T> chest = new ConcurrentLinkedQueue<T>();
 
 	@Override
 	public boolean isEmpty() {
@@ -38,12 +29,7 @@ public class ChestBounded<T extends Whisper<?>> implements Chest<T> {
 
 	@Override
 	public T poll() {
-		try {
-			return chest.poll(1000, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		return null;
+		return chest.poll();
 	}
 
 	@Override

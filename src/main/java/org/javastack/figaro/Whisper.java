@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  */
-package org.javastack;
+package org.javastack.figaro;
 
 /**
  * This is a simple Message

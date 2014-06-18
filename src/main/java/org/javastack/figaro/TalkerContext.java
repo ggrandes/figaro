@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  */
-package org.javastack;
+package org.javastack.figaro;
 
 import org.apache.log4j.Logger;
 

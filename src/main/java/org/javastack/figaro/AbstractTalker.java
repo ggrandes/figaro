@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  */
-package org.javastack;
+package org.javastack.figaro;
 
 /**
  * Unit of processing (abstract implementation)

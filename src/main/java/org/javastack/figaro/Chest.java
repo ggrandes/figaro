@@ -12,28 +12,38 @@
  * limitations under the License.
  *
  */
-package org.javastack;
+package org.javastack.figaro;
 
 /**
- * How messages are handled between Talkers
+ * Container for messages
  */
-public enum TalkerType {
+public interface Chest<T extends Whisper<?>> {
 	/**
-	 * Messages are send/received in current Thread (in-place) without synchronized block
+	 * Return if Chest is empty
+	 * 
+	 * @return isEmptry?
 	 */
-	INPLACE_UNSYNC,
+	public boolean isEmpty();
+
 	/**
-	 * Messages are send/received in current Thread (in-place) inside synchronized block
+	 * Return size of Chest
+	 * 
+	 * @return
 	 */
-	INPLACE_SYNC,
+	public int size();
+
 	/**
-	 * Messages are queued (queue is depth unlimited) for processes in a worker
-	 * Thread
+	 * Return element from chest or null if empty
+	 * 
+	 * @return
 	 */
-	QUEUED_UNBOUNDED,
+	public T poll();
+
 	/**
-	 * Messages are queued (queue is depth limited) for processes in a worker
-	 * Thread
+	 * Add element to chest and return if success
+	 * 
+	 * @param value
+	 * @return true if element is added
 	 */
-	QUEUED_BOUNDED
+	public boolean offer(final T value);
 }
