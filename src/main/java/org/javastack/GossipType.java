@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  */
-package net.figaro;
+package org.javastack;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;

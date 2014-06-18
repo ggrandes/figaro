@@ -2,7 +2,7 @@
 
 In-process Asynchronous Message System in Java for Event Bus/Actor Model (like Kilim, µJavaActors, Akka,... but very simplified). Open Source Java project under Apache License v2.0
 
-### Current Development Version is [0.0.5](https://maven-release.s3.amazonaws.com/release/net/figaro/figaro/0.0.5/figaro-0.0.5.jar)
+### Current Development Version is [0.0.6](https://maven-release.s3.amazonaws.com/release/org/javastack/figaro/0.0.6/figaro-0.0.6.jar)
 
 ---
 
@@ -11,10 +11,10 @@ In-process Asynchronous Message System in Java for Event Bus/Actor Model (like K
 #### Usage Example
 
 ```java
-import net.figaro.AbstractTalker;
-import net.figaro.GossipMonger;
-import net.figaro.Talker;
-import net.figaro.Whisper;
+import org.javastack.AbstractTalker;
+import org.javastack.GossipMonger;
+import org.javastack.Talker;
+import org.javastack.Whisper;
 
 public class HelloWorld {
 	public static void main(final String[] args) throws Throwable {
@@ -36,13 +36,13 @@ public class HelloWorld {
 }
 ```
 
-* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/main/java/net/figaro/example/)
+* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/main/java/org/javastack/example/)
 
 ---
 
 ## MAVEN
 
-Add the Figaro maven repository location to your pom.xml: 
+Add the maven repository location to your pom.xml: 
 
     <repositories>
         <repository>
@@ -51,12 +51,12 @@ Add the Figaro maven repository location to your pom.xml:
         </repository>
     </repositories>
 
-Add the Figaro dependency to your pom.xml:
+Add the dependency to your pom.xml:
 
     <dependency>
-        <groupId>net.figaro</groupId>
+        <groupId>org.javastack</groupId>
         <artifactId>figaro</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6</version>
     </dependency>
 
 ---

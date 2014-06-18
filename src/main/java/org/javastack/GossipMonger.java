@@ -12,7 +12,7 @@
  * limitations under the License.
  *
  */
-package net.figaro;
+package org.javastack;
 
 import java.util.ArrayDeque;
 import java.util.Set;
