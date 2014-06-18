@@ -36,7 +36,7 @@ public class HelloWorld {
 }
 ```
 
-* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/main/java/org/javastack/example/)
+* More examples in [Example package](https://github.com/ggrandes/figaro/tree/master/src/main/java/org/javastack/figaro/example/)
 
 ---
 
