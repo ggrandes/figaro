@@ -2,7 +2,7 @@
 
 In-process Asynchronous Message System in Java for Event Bus/Actor Model (like Kilim, µJavaActors, Akka,... but very simplified). Open Source Java project under Apache License v2.0
 
-### Current Development Version is [0.0.6](https://maven-release.s3.amazonaws.com/release/org/javastack/figaro/0.0.6/figaro-0.0.6.jar)
+### Current Development Version is [1.0.0](https://maven-release.s3.amazonaws.com/release/org/javastack/figaro/1.0.0/figaro-1.0.0.jar)
 
 ---
 
@@ -56,7 +56,7 @@ Add the dependency to your pom.xml:
     <dependency>
         <groupId>org.javastack</groupId>
         <artifactId>figaro</artifactId>
-        <version>0.0.6</version>
+        <version>1.0.0</version>
     </dependency>
 
 ---
