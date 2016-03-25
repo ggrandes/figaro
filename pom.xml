@@ -4,7 +4,7 @@
 
 	<groupId>org.javastack</groupId>
 	<artifactId>figaro</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>In-process Asynchronous Message System in Java for Event Bus/Actor Model (like Kilim, µJavaActors, Akka,... but very simplified)</description>
 
 	<name>${project.groupId}:${project.artifactId}</name>

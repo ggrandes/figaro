@@ -70,7 +70,8 @@ class TalkerContext implements Runnable {
 					break;
 				if (idle > 100) {
 					try {
-						System.out.println(getName() + " TalkerContext sleep()" );
+						if (log.isDebugEnabled())
+							log.debug(getName() + " TalkerContext sleep()");
 						Thread.sleep(100);
 						now = System.currentTimeMillis();
 						idleBegin = now;
